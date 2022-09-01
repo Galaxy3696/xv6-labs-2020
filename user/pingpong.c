@@ -44,6 +44,7 @@ int main(int argc, char const *argv[])
 		}
 		printf("%d: received pong\n", pid);
 		close(p[0]);
+		
 		exit(0);
 	}
 }
