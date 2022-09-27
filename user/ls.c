@@ -30,11 +30,13 @@ ls(char *path)
   struct dirent de;
   struct stat st;
 
+  //打开path所指的文件描述符
   if((fd = open(path, 0)) < 0){
     fprintf(2, "ls: cannot open %s\n", path);
     return;
   }
 
+  //查看相关文件信息并存入st中
   if(fstat(fd, &st) < 0){
     fprintf(2, "ls: cannot stat %s\n", path);
     close(fd);
@@ -42,16 +44,20 @@ ls(char *path)
   }
 
   switch(st.type){
+  //如果打开的是文件类型，就直接输出该文件的信息
   case T_FILE:
     printf("%s %d %d %l\n", fmtname(path), st.type, st.ino, st.size);
     break;
-
+  //如果打开的是目录类型
+  //判断是否路径太长
   case T_DIR:
     if(strlen(path) + 1 + DIRSIZ + 1 > sizeof buf){
       printf("ls: path too long\n");
       break;
     }
+    //将path拷贝到buf中
     strcpy(buf, path);
+    // 移动指针
     p = buf+strlen(buf);
     *p++ = '/';
     while(read(fd, &de, sizeof(de)) == sizeof(de)){
